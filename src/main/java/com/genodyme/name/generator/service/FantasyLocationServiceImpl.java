@@ -1,10 +1,12 @@
 package com.genodyme.name.generator.service;
 
+import com.genodyme.name.generator.domain.FantasyLocationResponse;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,15 +16,19 @@ import java.util.Random;
  * Implementation of Name Generation Service
  */
 @Service
-public class NameGenerationServiceImpl implements NameGenerationService {
+public class FantasyLocationServiceImpl implements FantasyLocationService {
 
     private static final String COMMA_DELIMITER = ",";
     private static final String PREFIX_FILENAME = "prefix.csv";
     private static final String SUFFIX_FILENAME = "suffix.csv";
     private static final String URL = "/opt/resources/";
     private static final String TEST_URL = "./";
-    public String generateName() {
-        return buildName();
+
+    private static final String DESCRIPTION = "A tumult of wild noises, which were caused by insects and critters," +
+            " reverberated through the air, and drowned out the occasional sounds of breaking twigs beneath" +
+            " the feet of larger animals.";
+    public FantasyLocationResponse generateLocation() {
+        return new FantasyLocationResponse(buildName(), DESCRIPTION, "/assets/images/evening-bayou.jpg");
     }
 
     private String buildName() {
@@ -36,13 +42,13 @@ public class NameGenerationServiceImpl implements NameGenerationService {
     }
 
     private String retrieveNameSegment(List<String> nameArray) {
-        Random rand = new Random();
+        Random rand = new SecureRandom();
         return nameArray.get(rand.nextInt(nameArray.size() - 1));
     }
 
     private List<List<String>> prefixArray(String filename) {
         List<List<String>> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(URL + filename))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(TEST_URL + filename))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(COMMA_DELIMITER);

@@ -1,6 +1,7 @@
 package com.genodyme.name.generator.controller;
 
-import com.genodyme.name.generator.service.NameGenerationService;
+import com.genodyme.name.generator.domain.FantasyLocationResponse;
+import com.genodyme.name.generator.service.FantasyLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,15 +12,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class NameGenerationController {
+public class FantasyLocationController {
 
     @Autowired
-    NameGenerationService nameGenerationService;
+    FantasyLocationService fantasyLocationService;
 
-    @CrossOrigin(origins = "http://martinmckendry.com")
-    @GetMapping(value = "/generate", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping(value = "/location", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<String> generateName() {
-        return new ResponseEntity<>(nameGenerationService.generateName(), HttpStatus.CREATED);
+    public ResponseEntity<FantasyLocationResponse> generateLocation() {
+        return new ResponseEntity<>(fantasyLocationService.generateLocation(), HttpStatus.OK);
     }
 }
