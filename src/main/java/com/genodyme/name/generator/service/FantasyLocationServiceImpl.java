@@ -1,16 +1,24 @@
 package com.genodyme.name.generator.service;
 
+import com.genodyme.name.generator.domain.FantasyLocationRequest;
 import com.genodyme.name.generator.domain.FantasyLocationResponse;
+import com.genodyme.name.generator.respository.FantasyLocationRepository;
+import com.genodyme.name.generator.utility.FantasyLocationResponseHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
+
+import static com.genodyme.name.generator.constants.FantasyLocationConstants.DEFAULT_DESCRIPTION;
+import static com.genodyme.name.generator.constants.FantasyLocationConstants.IMAGES_FILENAME;
+import static com.genodyme.name.generator.constants.FantasyLocationConstants.IMAGE_URL;
+import static com.genodyme.name.generator.constants.FantasyLocationConstants.PREFIX_FILENAME;
+import static com.genodyme.name.generator.constants.FantasyLocationConstants.PREFIX_URL;
+import static com.genodyme.name.generator.constants.FantasyLocationConstants.SUFFIX_FILENAME;
+
 
 /**
  * Implementation of Name Generation Service
@@ -18,27 +26,33 @@ import java.util.Random;
 @Service
 public class FantasyLocationServiceImpl implements FantasyLocationService {
 
-    private static final String COMMA_DELIMITER = ",";
-    private static final String PREFIX_FILENAME = "prefix.csv";
-    private static final String SUFFIX_FILENAME = "suffix.csv";
-    private static final String URL = "/opt/resources/";
-    private static final String TEST_URL = "./";
+    @Autowired
+    private FantasyLocationRepository fantasyLocationRepository;
 
-    private static final String DESCRIPTION = "A tumult of wild noises, which were caused by insects and critters," +
-            " reverberated through the air, and drowned out the occasional sounds of breaking twigs beneath" +
-            " the feet of larger animals.";
     public FantasyLocationResponse generateLocation() {
-        return new FantasyLocationResponse(buildName(), DESCRIPTION, "/assets/images/evening-bayou.jpg");
+        return new FantasyLocationResponse(buildId(), buildName(), buildDescription(), buildImageUrl());
     }
 
+    private UUID buildId() {
+        return UUID.randomUUID();
+    }
     private String buildName() {
-        List<List<String>> prefixList = prefixArray(PREFIX_FILENAME);
-        List<List<String>> suffixList = prefixArray(SUFFIX_FILENAME);
+        List<List<String>> prefixList = FantasyLocationResponseHelper.readFromCSV(PREFIX_FILENAME, PREFIX_URL);
+        List<List<String>> suffixList = FantasyLocationResponseHelper.readFromCSV(SUFFIX_FILENAME, PREFIX_URL);
 
-        String prefixName = retrieveNameSegment(simplifyList(prefixList));
-        String suffixName = retrieveNameSegment(simplifyList(suffixList));
+        String prefixName = retrieveNameSegment(simplifList(prefixList));
+        String suffixName = retrieveNameSegment(simplifList(suffixList));
 
         return prefixName + suffixName.toLowerCase();
+    }
+
+    private String buildDescription() {
+        return DEFAULT_DESCRIPTION;
+    }
+
+    private String buildImageUrl() {
+        List<List<String>> imageUrls = FantasyLocationResponseHelper.readFromCSV(IMAGES_FILENAME, IMAGE_URL);
+        return retrieveNameSegment(simplifList(imageUrls));
     }
 
     private String retrieveNameSegment(List<String> nameArray) {
@@ -46,21 +60,17 @@ public class FantasyLocationServiceImpl implements FantasyLocationService {
         return nameArray.get(rand.nextInt(nameArray.size() - 1));
     }
 
-    private List<List<String>> prefixArray(String filename) {
-        List<List<String>> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(TEST_URL + filename))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(COMMA_DELIMITER);
-                records.add(Arrays.asList(values));
-            }
-            return records;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private List<String> simplifyList(List<List<String>> complextList) {
+    private List<String> simplifList(List<List<String>> complextList) {
         return complextList.stream().flatMap(List::stream).toList();
     }
+
+    public FantasyLocationResponse createFantasyLocation(FantasyLocationRequest fantasyLocationRequest) {
+        fantasyLocationRepository.save(fantasyLocationRequest);
+        return getLocationByName(fantasyLocationRequest.getName());
+    }
+
+    public FantasyLocationResponse getLocationByName(String name){
+       return fantasyLocationRepository.findFantasyLocationByName(name);
+    }
+
 }
