@@ -1,5 +1,7 @@
 package com.genodyme.name.generator.utility;
 
+import com.genodyme.name.generator.exception.FantasyNameGeneratorException;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,7 +23,7 @@ public class FantasyLocationResponseHelper {
       }
       return records;
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new FantasyNameGeneratorException(e.getMessage());
     }
   }
 

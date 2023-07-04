@@ -15,10 +15,10 @@ import java.util.UUID;
 import static com.genodyme.name.generator.constants.FantasyLocationConstants.DEFAULT_DESCRIPTION;
 import static com.genodyme.name.generator.constants.FantasyLocationConstants.IMAGES_FILENAME;
 import static com.genodyme.name.generator.constants.FantasyLocationConstants.IMAGE_URL;
+import static com.genodyme.name.generator.constants.FantasyLocationConstants.IMAGE_URL_TEST;
+import static com.genodyme.name.generator.constants.FantasyLocationConstants.LOCATION_BASE_URL_TEST;
 import static com.genodyme.name.generator.constants.FantasyLocationConstants.PREFIX_FILENAME;
-import static com.genodyme.name.generator.constants.FantasyLocationConstants.PREFIX_URL;
 import static com.genodyme.name.generator.constants.FantasyLocationConstants.SUFFIX_FILENAME;
-
 
 /**
  * Implementation of Name Generation Service
@@ -30,15 +30,16 @@ public class FantasyLocationServiceImpl implements FantasyLocationService {
     private FantasyLocationRepository fantasyLocationRepository;
 
     public FantasyLocationResponse generateLocation() {
-        return new FantasyLocationResponse(buildId(), buildName(), buildDescription(), buildImageUrl());
+        FantasyLocationRequest fantasyLocationRequest = new FantasyLocationRequest(buildId(), buildName(), buildDescription(), buildImageUrl());
+        return createFantasyLocation(fantasyLocationRequest);
     }
 
     private UUID buildId() {
         return UUID.randomUUID();
     }
     private String buildName() {
-        List<List<String>> prefixList = FantasyLocationResponseHelper.readFromCSV(PREFIX_FILENAME, PREFIX_URL);
-        List<List<String>> suffixList = FantasyLocationResponseHelper.readFromCSV(SUFFIX_FILENAME, PREFIX_URL);
+        List<List<String>> prefixList = FantasyLocationResponseHelper.readFromCSV(PREFIX_FILENAME, LOCATION_BASE_URL_TEST);
+        List<List<String>> suffixList = FantasyLocationResponseHelper.readFromCSV(SUFFIX_FILENAME, LOCATION_BASE_URL_TEST);
 
         String prefixName = retrieveNameSegment(simplifList(prefixList));
         String suffixName = retrieveNameSegment(simplifList(suffixList));
@@ -51,7 +52,7 @@ public class FantasyLocationServiceImpl implements FantasyLocationService {
     }
 
     private String buildImageUrl() {
-        List<List<String>> imageUrls = FantasyLocationResponseHelper.readFromCSV(IMAGES_FILENAME, IMAGE_URL);
+        List<List<String>> imageUrls = FantasyLocationResponseHelper.readFromCSV(IMAGES_FILENAME, IMAGE_URL_TEST);
         return retrieveNameSegment(simplifList(imageUrls));
     }
 
@@ -69,8 +70,12 @@ public class FantasyLocationServiceImpl implements FantasyLocationService {
         return getLocationByName(fantasyLocationRequest.getName());
     }
 
-    public FantasyLocationResponse getLocationByName(String name){
-       return fantasyLocationRepository.findFantasyLocationByName(name);
+    public FantasyLocationResponse getLocationByName(String name) {
+        return fantasyLocationRepository.findLocationByName(name);
+    }
+
+    public FantasyLocationResponse getLocationById(UUID id) {
+        return fantasyLocationRepository.findLocationById(id);
     }
 
 }
