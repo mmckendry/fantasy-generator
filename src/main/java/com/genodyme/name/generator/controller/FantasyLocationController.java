@@ -23,7 +23,7 @@ public class FantasyLocationController {
     @Autowired
     FantasyLocationService fantasyLocationService;
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    @CrossOrigin(origins = "http://martinmckendry.com")
     @GetMapping(value = "/location", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public FantasyLocationResponse generateLocation() {
