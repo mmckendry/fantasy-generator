@@ -1,8 +1,8 @@
 package com.genodyme.name.generator.service;
 
 
-import com.genodyme.name.generator.domain.FantasyLocationResponse;
-import com.genodyme.name.generator.respository.FantasyLocationRepository;
+import com.genodyme.name.generator.domain.LocationResponse;
+import com.genodyme.name.generator.respository.LocationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -16,19 +16,19 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-class FantasyLocationServiceImplTest {
+class LocationServiceImplTest {
 
   @Mock
-  FantasyLocationRepository repository;
+  LocationRepository repository;
   @InjectMocks
-  FantasyLocationServiceImpl fantasyLocationService;
+  LocationServiceImpl fantasyLocationService;
 
   @Test
   void generateLocationTest() {
 
-    when(repository.save(any())).thenReturn(new FantasyLocationResponse(null,"town", null, null));
-    when(repository.findLocationByName(anyString())).thenReturn(new FantasyLocationResponse(null,"town", null, null));
-    FantasyLocationResponse testResponse = fantasyLocationService.generateLocation();
+    when(repository.save(any())).thenReturn(new LocationResponse(null,"town", null, null));
+    when(repository.findLocationByName(anyString())).thenReturn(new LocationResponse(null,"town", null, null));
+    LocationResponse testResponse = fantasyLocationService.generateLocation();
 
     assertNotNull(testResponse);
     assertEquals("town", testResponse.getName());
